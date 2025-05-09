@@ -26,6 +26,7 @@ void cmd_help(int argc, char *argv[], void *data);
 void cmd_exit(int argc, char *argv[], void *data);
 void list_tasks(int argc, char *argv[], void *data);
 void add_task(int argc, char *argv[], void *data);
+void toggle_task_complete(int argc, char *argv[], void *data);
 
 void cmd_exit(int argc, char *argv[], void *data) {
     (void)data;
@@ -37,6 +38,7 @@ Command commands[] = {
     {"help", "Show available commands", cmd_help},
     {"add", "Add a new task", add_task},
     {"list", "Show all tasks", list_tasks},
+    {"toggle","Toggles the task with the given task id", toggle_task_complete},
     {"exit", "Exit the program", cmd_exit},
     {"quit", "Exit the program", cmd_exit},
     {NULL, NULL, NULL} // sentinel
@@ -124,6 +126,31 @@ struct Node *create_task(int argc, char *argv[], void *data) {
     strncpy(node->description, description_buffer, MAX_DESC_LEN - 1);
     node->description[MAX_DESC_LEN - 1] = '\0';
 
+    // priority logic
+    char priority_buffer[MAX_PRIORITY_LEN] = {0};
+    memset(priority_buffer, '\0', sizeof(priority_buffer));
+
+    if (argc > 3 && argv[3] != NULL) {
+        strncpy(priority_buffer, argv[3], MAX_PRIORITY_LEN - 1);
+    } else {
+        printf("Enter task priority: ");
+        if (!fgets(priority_buffer, sizeof(priority_buffer), stdin)) {
+            fprintf(stderr, "Failed to read task priority.\n");
+            remove_node(lp, node);
+            return NULL;
+        }
+        priority_buffer[strcspn(priority_buffer, "\n")] = '\0'; // Trim newline
+    }
+
+    // now that we have the buffer in a shadow copy convert it to our priority
+    char *endptr;
+    long priority_n = strtol(priority_buffer, &endptr, 10);
+    if (*endptr != '\0') {
+        fprintf(stderr, "Invalid priority value.\n");
+        remove_node(lp, node);
+        return NULL;
+    }
+    node->priority = (int)priority_n;
     node->task_status = UNCOMPLETED_TASK;
 
     printf("Task '%s' added successfully.\n", node->title);
@@ -144,6 +171,36 @@ struct Node *find_task_by_id(struct List *lp, int id) {
 void add_task(int argc, char *argv[], void *data) {
     create_task(argc, argv, data);
 }
+
+void toggle_task_complete(int argc, char *argv[], void *data) {
+    struct List *lp = (struct List *)data;
+
+    if (argc <= 1 || argv[1] == NULL) {
+        printf("You must supply a task identifier.\n");
+        return;
+    }
+
+    int task_id = atoi(argv[1]);
+
+    if (task_id <= 0) {
+        printf("Invalid task ID. Must be a positive number.\n");
+        return;
+    }
+
+    struct Node *target_node = find_task_by_id(lp, task_id);
+    if (!target_node) {
+        printf("Task with ID %d not found.\n", task_id);
+        return;
+    }
+
+    // Toggle status
+    target_node->task_status = !target_node->task_status;
+
+    printf("Task %d marked as %s.\n", 
+           target_node->id,
+           target_node->task_status ? STATUS_COMPLETED : STATUS_UNCOMPLETED);
+}
+
 
 #define MAX_TOKENS 16
 

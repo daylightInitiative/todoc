@@ -4,6 +4,7 @@
 
 #define MAX_NAME_LEN 256 // bytes
 #define MAX_DESC_LEN 1048 // bytes
+#define MAX_PRIORITY_LEN 32 // bytes
 
 #define RED     "\033[1;31m"
 #define GREEN   "\033[1;32m"
