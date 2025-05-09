@@ -22,13 +22,22 @@ struct List *create_list() {
 
 void echo_list(struct List *lp) {
     if (lp->capacity == 0) {
-        printf("No remaining items\n");
+        printf("\nNo current tasks.\n");
         return;
     }
 
+    printf("\n=== Task List ===\n\n");
+
     struct Node *current = lp->head;
     while (current != NULL) {
-        printf("Task id: %d\n", current->id);
+        printf("ID         : %d\n", current->id);
+        printf("Title      : %s\n", current->title);
+        printf("Description: %s\n", current->description);
+        printf("Priority   : %d\n", current->priority);
+        printf("Status     : %s\n", 
+            current->task_status == 0 ? "Uncompleted" : "Completed");
+        printf("---------------------------\n");
+
         current = current->next;
     }
 }

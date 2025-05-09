@@ -13,6 +13,8 @@ struct Node {
     int priority;
     int id;
 
+    int task_status;
+
     struct Node *next;
     struct Node *prev;
 };
