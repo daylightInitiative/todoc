@@ -35,7 +35,7 @@ void echo_list(struct List *lp) {
         printf("Description: %s\n", current->description);
         printf("Priority   : %d\n", current->priority);
         printf("Status     : %s\n", 
-            current->task_status == 0 ? "Uncompleted" : "Completed");
+            current->task_status == 0 ? STATUS_UNCOMPLETED : STATUS_COMPLETED);
         printf("---------------------------\n");
 
         current = current->next;

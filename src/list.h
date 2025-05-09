@@ -5,6 +5,13 @@
 #define MAX_NAME_LEN 256 // bytes
 #define MAX_DESC_LEN 1048 // bytes
 
+#define RED     "\033[1;31m"
+#define GREEN   "\033[1;32m"
+#define RESET   "\033[0m"
+
+#define STATUS_UNCOMPLETED  RED "Uncompleted" RESET
+#define STATUS_COMPLETED    GREEN "Completed" RESET
+
 struct Node {
 
     char title[MAX_NAME_LEN];
